@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import { Inter, Source_Code_Pro } from "next/font/google";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
 import { minikitConfig } from "../minikit.config";
@@ -34,6 +34,12 @@ const sourceCodePro = Source_Code_Pro({
   variable: "--font-source-code-pro",
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  other: {
+    'base:app_id': '69599e3ec63ad876c9081fa9',
+  },
+};
 
 export default function RootLayout({
   children,
