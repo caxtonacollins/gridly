@@ -25,7 +25,9 @@ export default function RootLayout({
   return (
     <RootProvider>
       <html lang="en">
-        <meta name="base:app_id" content={process.env.BASE_APP_ID} />
+        <head>
+          <meta name="base:app_id" content={process.env.BASE_APP_ID} />
+        </head>        
         <body className={`${inter.variable} ${sourceCodePro.variable}`}>
           <SafeArea>{children}</SafeArea>
         </body>
