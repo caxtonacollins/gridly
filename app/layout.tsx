@@ -1,28 +1,10 @@
-import type { Metadata } from "next";
 import { Inter, Source_Code_Pro } from "next/font/google";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
-import { minikitConfig } from "../minikit.config";
 import { RootProvider } from "./rootProvider";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: minikitConfig.miniapp.name,
-    description: minikitConfig.miniapp.description,
-    other: {
-      "fc:frame": JSON.stringify({
-        version: minikitConfig.miniapp.version,
-        imageUrl: minikitConfig.miniapp.heroImageUrl,
-        button: {
-          title: `Join the ${minikitConfig.miniapp.name} Waitlist`,
-          action: {
-            name: `Launch ${minikitConfig.miniapp.name}`,
-            type: "launch_frame",
-          },
-        },
-      }),
-    },
-  };
+if (!process.env.BASE_APP_ID) {
+  throw new Error("BASE_APP_ID is not defined");
 }
 
 const inter = Inter({
@@ -43,7 +25,9 @@ export default function RootLayout({
   return (
     <RootProvider>
       <html lang="en">
-        <meta name="base:app_id" content="69599e3ec63ad876c9081fa9" />
+        <head>
+          <meta name="base:app_id" content={process.env.BASE_APP_ID} />
+        </head>        
         <body className={`${inter.variable} ${sourceCodePro.variable}`}>
           <SafeArea>{children}</SafeArea>
         </body>
