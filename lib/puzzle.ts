@@ -46,11 +46,17 @@ export function getSolutionIndexForDate(date = new Date()) {
 }
 
 export function getGridSize() {
-  return 4; // 4x4 grid
+  return 4;
 }
 
 export function isSameDay(a: string, b: string) {
   return a === b;
+}
+
+// Parse a `YYYY-MM-DD` date key into a Date at UTC midnight. Useful for dev overrides.
+export function parseDateKey(key: string) {
+  const [y, m, d] = key.split("-").map((s) => parseInt(s, 10));
+  return new Date(Date.UTC(y, m - 1, d));
 }
 
 /*

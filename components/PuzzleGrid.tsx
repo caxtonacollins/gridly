@@ -14,8 +14,18 @@ export type PuzzleState = "idle" | "success" | "failure" | "locked";
 type Props = {
   solutionIndex: number;
   dateKey: string;
-  initialResult?: { win: boolean; choice?: number } | null;
-  onComplete: (data: { win: boolean; choice?: number }) => void;
+  // initialResult reflects stored result shape; solveTimeMs is optional
+  initialResult?: {
+    win: boolean;
+    choice?: number;
+    ts?: number;
+    solveTimeMs?: number;
+  } | null;
+  onComplete: (data: {
+    win: boolean;
+    choice?: number;
+    solveTimeMs?: number;
+  }) => void;
 };
 
 export default function PuzzleGrid({
@@ -33,6 +43,18 @@ export default function PuzzleGrid({
   const [choice, setChoice] = useState<number | null>(
     initialResult?.choice ?? null
   );
+
+  // Timer for solve time tracking
+  const [startTs, setStartTs] = useState<number | null>(null);
+
+  // start timer when grid is shown and puzzle is not already completed
+  useEffect(() => {
+    if (!initialResult) {
+      setStartTs(Date.now());
+    } else {
+      setStartTs(null);
+    }
+  }, [initialResult]);
 
   useEffect(() => {
     if (initialResult) setChoice(initialResult.choice ?? null);
@@ -59,12 +81,17 @@ export default function PuzzleGrid({
     setState(win ? "success" : "failure");
     // lock further interaction
     setTimeout(() => setState("locked"), 250);
-    onComplete({ win, choice: i });
+
+    // stop timer and compute duration (ms)
+    const now = Date.now();
+    const duration = startTs ? Math.max(0, now - startTs) : undefined;
+
+    onComplete({ win, choice: i, solveTimeMs: duration });
   }
 
   function cellClass(i: number) {
     const base =
-      "w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-lg text-sm font-medium border-2";
+      "w-full aspect-square flex items-center justify-center rounded-lg text-sm font-medium border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2";
     if (choice === null)
       return `${base} bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800`;
 
@@ -79,22 +106,42 @@ export default function PuzzleGrid({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="grid grid-cols-4 gap-3 justify-center">
+      <div
+        className="grid grid-cols-4 gap-3 justify-center"
+        role="grid"
+        aria-label="Puzzle grid"
+      >
         {Array.from({ length: total }).map((_, i) => (
           <button
+            role="gridcell"
             key={i}
             aria-label={`cell ${i + 1}`}
             onClick={() => handleTap(i)}
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" ||
+                e.key === " " ||
+                e.key === "Spacebar" ||
+                e.code === "Space"
+              ) {
+                e.preventDefault();
+                handleTap(i);
+              }
+            }}
             className={cellClass(i)}
             disabled={
               state === "locked" || state === "success" || choice !== null
             }
+            aria-disabled={
+              state === "locked" || state === "success" || choice !== null
+            }
+            aria-pressed={choice === i}
           >
             {/* Keep cells minimal and rounded */}
           </button>
         ))}
       </div>
-      <div className="mt-4 text-center">
+      <div className="mt-4 text-center" role="status" aria-live="polite">
         {state === "idle" && (
           <p className="text-sm text-gray-600 dark:text-gray-300">
             Tap a cell to guess today's tile.

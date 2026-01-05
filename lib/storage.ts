@@ -4,8 +4,15 @@
 // localStorage["gridly:results"] = JSON.stringify({ [dateKey]: { win: boolean, ts: number, choice?: number } })
 
 const STORAGE_KEY = "gridly:results";
+const OVERRIDE_KEY = "gridly:overrideDate";
 
-type Result = { win: boolean; ts: number; choice?: number };
+// Result supports an optional solveTimeMs field to record how long the user took to make the first attempt
+export type Result = {
+  win: boolean;
+  ts: number;
+  choice?: number;
+  solveTimeMs?: number;
+};
 
 export function loadResults(): Record<string, Result> {
   if (typeof window === "undefined") return {};
@@ -40,6 +47,17 @@ export function clearResults() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
+export function getOverrideDate(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(OVERRIDE_KEY);
+}
+
+export function setOverrideDate(dateKey: string | null) {
+  if (typeof window === "undefined") return;
+  if (dateKey === null) localStorage.removeItem(OVERRIDE_KEY);
+  else localStorage.setItem(OVERRIDE_KEY, dateKey);
+}
+
 // Statistics computed from results map
 export function computeStats() {
   const map = loadResults();
@@ -54,8 +72,24 @@ export function computeStats() {
   let streak = 0;
   let prevDate: Date | null = null;
 
+  // Solve-time metrics
+  let bestSolveTimeMs: number | null = null; // best (minimum) solve time among wins
+  let lastSolveTimeMs: number | null = null; // most recent solve time (any result with solveTimeMs)
+
   for (const d of dates) {
-    const win = map[d].win;
+    const entry = map[d];
+    const win = entry.win;
+
+    // solve-time aggregation
+    if (entry.solveTimeMs != null) {
+      lastSolveTimeMs = entry.solveTimeMs;
+      if (win) {
+        if (bestSolveTimeMs == null || entry.solveTimeMs < bestSolveTimeMs) {
+          bestSolveTimeMs = entry.solveTimeMs;
+        }
+      }
+    }
+
     const [y, m, day] = d.split("-").map((s) => parseInt(s, 10));
     const dateObj = new Date(Date.UTC(y, m - 1, day));
 
@@ -112,5 +146,7 @@ export function computeStats() {
     wins,
     currentStreak,
     bestStreak,
+    bestSolveTimeMs,
+    lastSolveTimeMs,
   };
 }
