@@ -129,13 +129,9 @@ export default function PuzzleGrid({
               }
             }}
             className={cellClass(i)}
-            disabled={
-              state === "locked" || state === "success" || choice !== null
-            }
-            aria-disabled={
-              state === "locked" || state === "success" || choice !== null
-            }
-            aria-pressed={choice === i}
+            disabled={state === "locked" || state === "success" || choice !== null}
+            aria-disabled={state === "locked" || state === "success" || choice !== null ? "true" : "false"}
+            aria-pressed={choice === i ? "true" : "false"}
           >
             {/* Keep cells minimal and rounded */}
           </button>

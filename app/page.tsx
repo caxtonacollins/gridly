@@ -5,6 +5,7 @@ import PuzzleGrid from "../components/PuzzleGrid";
 import Stats from "../components/Stats";
 import Countdown from "../components/Countdown";
 import DevControls from "../components/DevControls";
+import Nav from "../components/Nav";
 import {
   getDateKey,
   getSolutionIndexForDate,
@@ -118,7 +119,7 @@ export default function Home() {
         setJustShared(true);
         return;
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
 
@@ -128,7 +129,7 @@ export default function Home() {
       window.open(url, "_blank");
       setJustShared(true);
       return;
-    } catch (e) {
+    } catch {
       // ignore
     }
 
@@ -137,7 +138,7 @@ export default function Home() {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -165,17 +166,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <header className="w-full max-w-md mt-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold" style={{ color: "#0052FF" }}>
-            Gridly
-          </h1>
-          <div className="text-sm text-gray-500">One puzzle • One try</div>
-        </div>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-          Try to find today's tile. Good luck—no sign-in required.
-        </p>
-      </header>
+      <Nav />
 
       <main className="w-full max-w-md mt-6">
         <DevControls />
