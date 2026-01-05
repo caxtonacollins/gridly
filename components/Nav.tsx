@@ -10,15 +10,12 @@ export default function Nav() {
       <header className="w-full max-w-md mt-6 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold shadow" style={{ backgroundColor: "#0052FF" }}>
-              G
-            </div>
-            <div>
+            <img src="/logo.png" alt="logo" className="w-12 h-12 rounded-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+            {/* <div>
               <h1 className="text-xl font-semibold" style={{ color: "#0052FF" }}>
                 Gridly
               </h1>
-              <div className="text-sm text-gray-500 hidden md:block">One puzzle • One try</div>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex items-center gap-3">
@@ -26,15 +23,17 @@ export default function Nav() {
             <nav className="hidden md:flex items-center gap-3 mr-2">
               <button
                 onClick={() => setActive("games")}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${active === "games" ? "bg-blue-600 text-white" : "text-gray-700 dark:text-gray-200"}`}
+                className={`px-3 py-2 text-sm font-medium relative group ${active === "games" ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"}`}
               >
                 Games
+                <span className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "games" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
               </button>
               <button
                 onClick={() => setActive("leaderboard")}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${active === "leaderboard" ? "bg-blue-600 text-white" : "text-gray-700 dark:text-gray-200"}`}
+                className={`px-3 py-2 text-sm font-medium relative group ${active === "leaderboard" ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"}`}
               >
                 Leaderboard
+                <span className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "leaderboard" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
               </button>
                 {/* <button
                     onClick={() => setActive("grid")}
@@ -46,7 +45,7 @@ export default function Nav() {
 
             {/* Avatar */}
             <button aria-label="Open account" title="Open account" className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-medium text-gray-800 dark:text-gray-100">
-              <img src="/og/icon-192.png" alt="avatar" className="w-9 h-9 rounded-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+              <img src="/og/default.png" alt="avatar" className="w-9 h-9 rounded-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
               <span className="sr-only">Open account</span>
             </button>
 
@@ -64,36 +63,36 @@ export default function Nav() {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed left-0 right-0 bottom-4 flex justify-center md:hidden">
-        <div className="w-full max-w-md px-6">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg p-3 flex justify-between items-center" style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}>
-            <button onClick={() => setActive("games")} className={`flex flex-col items-center gap-1 text-xs ${active === "games" ? "text-white bg-blue-600 rounded-md px-3 py-1" : "text-gray-600 dark:text-gray-300"}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span>Game</span>
-            </button>
+      <nav className="fixed left-0 right-0 bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-3 px-4 md:hidden">
+        <div className="flex justify-center items-center gap-6">
+          <button 
+            onClick={() => setActive("games")} 
+            className={`flex flex-col items-center relative group px-3 py-1 ${active === "games" ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
+              <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-xs font-medium">Game</span>
+            <span className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "games" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
+          </button>
 
-            <button onClick={() => setActive("leaderboard")} className={`flex flex-col items-center gap-1 text-xs ${active === "leaderboard" ? "text-white bg-blue-600 rounded-md px-3 py-1" : "text-gray-600 dark:text-gray-300"}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M8 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M16 3v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span>Leaderboard</span>
-            </button>
+          <button 
+            onClick={() => setActive("leaderboard")} 
+            className={`flex flex-col items-center relative group px-3 py-1 ${active === "leaderboard" ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
+              <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M8 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M16 3v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-xs font-medium">Leaderboard</span>
+            <span className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "leaderboard" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
+          </button>
 
-            {/* <button onClick={() => setActive("Grid")} className={`flex flex-col items-center gap-1 text-xs ${active === "Grid" ? "text-white bg-blue-600 rounded-md px-3 py-1" : "text-gray-600 dark:text-gray-300"}`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M5 21c2-4 6-6 7-6s5 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span>$Grid</span>
-            </button> */}
-          </div>
+          {/* Add more navigation items here - they will be automatically centered */}
         </div>
       </nav>
     </>
