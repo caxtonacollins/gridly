@@ -1,9 +1,9 @@
 import { Inter, Source_Code_Pro } from "next/font/google";
-import { SafeArea } from "@coinbase/onchainkit/minikit";
 import { RootProvider } from "./rootProvider";
 import "./globals.css";
 import { minikitConfig } from "@/minikit.config";
 import { Metadata } from "next";
+import LayoutContent from "../components/LayoutContent";
 
 if (!process.env.BASE_APP_ID) {
   throw new Error("BASE_APP_ID is not defined");
@@ -30,7 +30,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -47,12 +46,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <RootProvider>
-      <html lang="en">     
-        <body className={`${inter.variable} ${sourceCodePro.variable}`}>
-          <SafeArea>{children}</SafeArea>
-        </body>
-      </html>
-    </RootProvider>
+    <html lang="en">
+      <body className={`${inter.variable} ${sourceCodePro.variable}`}>
+        <RootProvider>
+          <LayoutContent>{children}</LayoutContent>
+        </RootProvider>
+      </body>
+    </html>
   );
 }

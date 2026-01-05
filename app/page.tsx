@@ -24,7 +24,7 @@ export default function Home() {
     if (!isMiniAppReady) {
       setMiniAppReady();
     }
-  }, [isMiniAppReady]);
+  }, [isMiniAppReady, setMiniAppReady]);
 
   // effective date can be overridden in dev mode via localStorage
   const [overrideKey, setOverrideKey] = useState<string | null>(() =>
