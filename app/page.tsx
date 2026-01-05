@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { useQuickAuth, useMiniKit } from "@coinbase/onchainkit/minikit";
 import PuzzleGrid from "../components/PuzzleGrid";
 import Stats from "../components/Stats";
 import Countdown from "../components/Countdown";
@@ -19,10 +19,10 @@ import {
 } from "../lib/storage";
 
 export default function Home() {
-  const { isMiniAppReady } = useMiniKit();
+  const { isMiniAppReady, setMiniAppReady } = useMiniKit();
   useEffect(() => {
     if (!isMiniAppReady) {
-      return;
+      setMiniAppReady();
     }
   }, [isMiniAppReady]);
 
