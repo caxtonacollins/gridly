@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useQuickAuth, useMiniKit } from "@coinbase/onchainkit/minikit";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import PuzzleGrid from "../components/PuzzleGrid";
 import Stats from "../components/Stats";
 import Countdown from "../components/Countdown";
@@ -19,12 +19,12 @@ import {
 } from "../lib/storage";
 
 export default function Home() {
-  const { isMiniAppReady, setMiniAppReady } = useMiniKit();
+  const { isMiniAppReady } = useMiniKit();
   useEffect(() => {
     if (!isMiniAppReady) {
-      setMiniAppReady();
+      return;
     }
-  }, [isMiniAppReady, setMiniAppReady]);
+  }, [isMiniAppReady]);
 
   // effective date can be overridden in dev mode via localStorage
   const [overrideKey, setOverrideKey] = useState<string | null>(() =>
