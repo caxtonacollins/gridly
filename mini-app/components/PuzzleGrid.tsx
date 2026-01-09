@@ -79,8 +79,8 @@ export default function PuzzleGrid({
     const win = i === solutionIndex;
     setChoice(i);
     setState(win ? "success" : "failure");
-    // lock further interaction
-    setTimeout(() => setState("locked"), 250);
+    // lock further interaction after a short delay to allow visual feedback
+    setTimeout(() => setState("locked"), 700);
 
     // stop timer and compute duration (ms)
     const now = Date.now();

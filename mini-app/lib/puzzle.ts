@@ -67,3 +67,34 @@ Comments on logic:
 - The salt "gridly-v1" allows future updates to the puzzle generation algorithm without
   changing historic puzzles.
 */
+
+// -------- Round Mode helpers --------
+
+// Get deterministic solution for an arbitrary round number (1..∞)
+export function getSolutionIndexForRound(roundId: number) {
+  const key = String(roundId) + "|gridly-round-v1";
+  const seed = hashStringToInt(key);
+  const rnd = mulberry32(seed);
+  return Math.floor(rnd() * 16);
+}
+
+// Get UTC epoch day number (days since 1970-01-01). Useful to map a date to a numeric ID.
+export function getEpochDay(date = new Date()) {
+  const utcMidnight = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate()
+  );
+  return Math.floor(utcMidnight / 86400000);
+}
+
+// Daily round id used for onchain leaderboard read/submit
+export function getDailyRoundId(date = new Date()) {
+  return getEpochDay(date);
+}
+
+// Round Mode round id space (separate from daily) to avoid collisions onchain
+export function getRoundModeRoundId(roundNumber: number) {
+  // Choose a large offset so daily IDs never collide. 2_000_000_000 is well within uint32.
+  return 2000000000 + Math.max(1, Math.floor(roundNumber));
+}

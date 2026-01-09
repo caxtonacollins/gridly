@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import PuzzleGrid from "../components/PuzzleGrid";
 import Stats from "../components/Stats";
@@ -10,6 +10,7 @@ import {
   getDateKey,
   getSolutionIndexForDate,
   parseDateKey,
+  getDailyRoundId,
 } from "../lib/puzzle";
 import {
   getResultForDate,
@@ -17,6 +18,11 @@ import {
   getOverrideDate,
   computeStats,
 } from "../lib/storage";
+import RoundMode from "../components/RoundMode";
+import LocalStats from "../components/LocalStats";
+import GlobalBest from "../components/GlobalBest";
+import SubmitScore from "../components/SubmitScore";
+import { updateTotalsAfterDaily } from "../lib/leaderboard";
 
 export default function Home() {
   const { isMiniAppReady } = useMiniKit();
@@ -26,7 +32,10 @@ export default function Home() {
     }
   }, [isMiniAppReady]);
 
-  // effective date can be overridden in dev mode via localStorage
+  // Mode toggle: Daily (default) | Rounds
+  const [mode, setMode] = useState<"daily" | "rounds">("daily");
+
+  // Effective date can be overridden in dev mode via localStorage
   const [overrideKey, setOverrideKey] = useState<string | null>(() =>
     getOverrideDate()
   );
@@ -44,6 +53,11 @@ export default function Home() {
   );
   const [justShared, setJustShared] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const dailyRoundId = useMemo(() => {
+    const d = overrideKey ? parseDateKey(overrideKey) : new Date();
+    return getDailyRoundId(d);
+  }, [overrideKey]);
 
   function onComplete(res: {
     win: boolean;
@@ -64,6 +78,8 @@ export default function Home() {
       ts: now,
       solveTimeMs: res.solveTimeMs,
     });
+    // Update all-time local totals with daily results
+    updateTotalsAfterDaily(res.win, res.solveTimeMs);
     // Storage triggers Stats updates elsewhere via `storage` event or computeStats on mount
   }
 
@@ -170,61 +186,100 @@ export default function Home() {
 
       <main className="w-full max-w-md mt-6">
         <DevControls />
-        <PuzzleGrid
-          solutionIndex={solutionIndex}
-          dateKey={todayKey}
-          initialResult={initialResult}
-          onComplete={onComplete}
-        />
+        {/* Mode Toggle */}
+        <div className="mt-3 grid grid-cols-2 gap-2" role="tablist" aria-label="Mode selector">
+          <button
+            role="tab"
+            aria-selected={mode === "daily"}
+            onClick={() => setMode("daily")}
+            className={`py-2 rounded-lg text-sm font-medium border ${
+              mode === "daily" ? "bg-[#0052FF] text-white border-[#0052FF]" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+            }`}
+          >
+            Daily
+          </button>
+          <button
+            role="tab"
+            aria-selected={mode === "rounds"}
+            onClick={() => setMode("rounds")}
+            className={`py-2 rounded-lg text-sm font-medium border ${
+              mode === "rounds" ? "bg-[#0052FF] text-white border-[#0052FF]" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+            }`}
+          >
+            Rounds
+          </button>
+        </div>
 
-        {initialResult && (
-          <div className="mt-4 flex flex-col gap-3">
-            <div className="flex gap-2">
-              <button
-                onClick={shareResult}
-                aria-label="Share result"
-                title="Share result"
-                className="flex-1 py-2 rounded-lg text-sm font-medium focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
-                style={{ backgroundColor: "#0052FF", color: "white" }}
-              >
-                Share
-              </button>
-              <a
-                href={`/api/og?date=${todayKey}&result=${
-                  initialResult.win ? "win" : "loss"
-                }`}
-                aria-label="Preview share image"
-                title="Preview share image"
-                className="flex-1 py-2 rounded-lg text-sm font-medium text-center border focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
-                style={{ borderColor: "#e5e7eb" }}
-              >
-                Preview
-              </a>
-            </div>
+        {/* Daily section (kept mounted) */}
+        <section aria-label="Daily Mode" hidden={mode !== "daily"}>
+          <PuzzleGrid
+            solutionIndex={solutionIndex}
+            dateKey={todayKey}
+            initialResult={initialResult}
+            onComplete={onComplete}
+          />
 
-            <Countdown />
-
-            {copied && (
-              <div className="text-xs text-gray-500">
-                Result copied to clipboard
+          {initialResult && (
+            <div className="mt-4 flex flex-col gap-3">
+              <div className="flex gap-2">
+                <button
+                  onClick={shareResult}
+                  aria-label="Share result"
+                  title="Share result"
+                  className="flex-1 py-2 rounded-lg text-sm font-medium focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
+                  style={{ backgroundColor: "#0052FF", color: "white" }}
+                >
+                  Share
+                </button>
+                <a
+                  href={`/api/og?date=${todayKey}&result=${
+                    initialResult.win ? "win" : "loss"
+                  }`}
+                  aria-label="Preview share image"
+                  title="Preview share image"
+                  className="flex-1 py-2 rounded-lg text-sm font-medium text-center border focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
+                  style={{ borderColor: "#e5e7eb" }}
+                >
+                  Preview
+                </a>
+                {initialResult.win && (
+                  <SubmitScore roundId={dailyRoundId} timeMs={initialResult.solveTimeMs} />
+                )}
               </div>
-            )}
-            {justShared && (
-              <div className="text-xs text-gray-500">Opened share intent</div>
-            )}
-            <Stats />
-          </div>
-        )}
 
-        {!initialResult && (
-          <div className="mt-4">
-            <Stats />
-          </div>
-        )}
+              <Countdown />
+              <GlobalBest roundId={dailyRoundId} />
+
+              {copied && (
+                <div className="text-xs text-gray-500">Result copied to clipboard</div>
+              )}
+              {justShared && (
+                <div className="text-xs text-gray-500">Opened share intent</div>
+              )}
+              <Stats />
+            </div>
+          )}
+
+          {!initialResult && (
+            <div className="mt-4">
+              <Countdown />
+              <GlobalBest roundId={dailyRoundId} />
+              <Stats />
+            </div>
+          )}
+        </section>
+
+        {/* Rounds section (kept mounted) */}
+        <section aria-label="Rounds Mode" hidden={mode !== "rounds"} className="mt-2">
+          <RoundMode />
+        </section>
 
         <footer className="mt-6 text-xs text-gray-500 text-center">
           Built for Base Mini Apps • No wallets, no tokens
         </footer>
+
+        {/* Local leaderboard is always visible */}
+        <LocalStats />
       </main>
     </div>
   );

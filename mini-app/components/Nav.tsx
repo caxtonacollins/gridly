@@ -1,8 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Nav() {
-  const [active, setActive] = useState("games");
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const isLeaderboard = pathname?.startsWith("/leaderboard");
 
   return (
     <>
@@ -21,26 +25,20 @@ export default function Nav() {
           <div className="flex items-center gap-3">
             {/* Desktop nav items (hidden on small screens) */}
             <nav className="hidden md:flex items-center gap-3 mr-2">
-              <button
-                onClick={() => setActive("games")}
-                className={`px-3 py-2 text-sm font-medium relative group ${active === "games" ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"}`}
+              <Link
+                href="/"
+                className={`px-3 py-2 text-sm font-medium relative group ${isHome ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"}`}
               >
                 Games
-                <span className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "games" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
-              </button>
-              <button
-                onClick={() => setActive("leaderboard")}
-                className={`px-3 py-2 text-sm font-medium relative group ${active === "leaderboard" ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"}`}
+                <span className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${isHome ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
+              </Link>
+              <Link
+                href="/leaderboard"
+                className={`px-3 py-2 text-sm font-medium relative group ${isLeaderboard ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"}`}
               >
                 Leaderboard
-                <span className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "leaderboard" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
-              </button>
-                {/* <button
-                    onClick={() => setActive("grid")}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium ${active === "cody" ? "bg-blue-600 text-white" : "text-gray-700 dark:text-gray-200"}`}
-                >
-                    $GRID
-                </button> */}
+                <span className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${isLeaderboard ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
+              </Link>
             </nav>
 
             {/* Avatar */}
@@ -65,23 +63,17 @@ export default function Nav() {
       {/* Mobile bottom nav */}
       <nav className="fixed left-0 right-0 bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-3 px-4 md:hidden">
         <div className="flex justify-center items-center gap-6">
-          <button 
-            onClick={() => setActive("games")} 
-            className={`flex flex-col items-center relative group px-3 py-1 ${active === "games" ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
-          >
+          <Link href="/" className={`flex flex-col items-center relative group px-3 py-1 ${isHome ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
               <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span className="text-xs font-medium">Game</span>
-            <span className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "games" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
-          </button>
+            <span className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${isHome ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
+          </Link>
 
-          <button 
-            onClick={() => setActive("leaderboard")} 
-            className={`flex flex-col items-center relative group px-3 py-1 ${active === "leaderboard" ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
-          >
+          <Link href="/leaderboard" className={`flex flex-col items-center relative group px-3 py-1 ${isLeaderboard ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
               <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M8 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -89,8 +81,8 @@ export default function Nav() {
               <path d="M16 3v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span className="text-xs font-medium">Leaderboard</span>
-            <span className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${active === "leaderboard" ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
-          </button>
+            <span className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-4/5 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-200 ${isLeaderboard ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></span>
+          </Link>
 
           {/* Add more navigation items here - they will be automatically centered */}
         </div>
