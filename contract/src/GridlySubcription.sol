@@ -156,6 +156,7 @@ contract GridlySubscription is Ownable, ReentrancyGuard {
      * @dev Admin: Update treasury address
      */
     function setTreasuryAddress(address _newTreasury) external onlyOwner {
+        require(_newTreasury != address(0), "Invalid treasury");
         treasuryAddress = _newTreasury;
     }
 }

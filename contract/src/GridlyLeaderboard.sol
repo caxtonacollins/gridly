@@ -106,6 +106,11 @@ contract GridlyLeaderboard is Ownable, ReentrancyGuard {
     ) external nonReentrant {
         require(_score > 0, "Score must be greater than 0");
         require(_timeMs > 0, "Time must be greater than 0");
+        // Enforce same time bounds as the 2-arg submitScore overload
+        require(
+            _timeMs >= MIN_TIME_MS && _timeMs <= MAX_TIME_MS,
+            "Invalid time"
+        );
 
         RoundLeaderboard storage round = roundLeaderboards[_roundId];
 
@@ -215,6 +220,7 @@ contract GridlyLeaderboard is Ownable, ReentrancyGuard {
     function sortLeaderboard(uint256 _roundId) internal {
         RoundLeaderboard storage round = roundLeaderboards[_roundId];
         uint256 n = round.entries.length;
+        if (n < 2) return;
 
         for (uint256 i = 0; i < n - 1; i++) {
             for (uint256 j = 0; j < n - i - 1; j++) {
