@@ -21,6 +21,16 @@ export default function RoundMode() {
   const roundId = useMemo(() => getRoundModeRoundId(roundNumber), [roundNumber]);
   const solutionIndex = useMemo(() => getSolutionIndexForRound(roundId), [roundId]);
 
+  const [latestResult, setLatestResult] = useState<{ win: boolean; solveTimeMs?: number; bestStreak: number } | null>(null);
+
+  useEffect(() => {
+    if (latestResult) {
+      updateTotalsAfterRound(latestResult.win, latestResult.solveTimeMs);
+      maybeUpdateBestRoundStreak(latestResult.bestStreak);
+      setLatestResult(null); // Reset after processing
+    }
+  }, [latestResult]);
+
   // advance to next round quickly after each decision
   function handleComplete(res: { win: boolean; choice?: number; solveTimeMs?: number }) {
     setSession((prev) => {
@@ -34,9 +44,10 @@ export default function RoundMode() {
             ? res.solveTimeMs
             : Math.min(prev.bestSolveTimeMs, res.solveTimeMs)
           : prev.bestSolveTimeMs;
-      // update local all-time totals as well
-      updateTotalsAfterRound(res.win, res.solveTimeMs);
-      maybeUpdateBestRoundStreak(bestStreak);
+          
+      // Schedule the leaderboard updates for the next render
+      setLatestResult({ win: res.win, solveTimeMs: res.solveTimeMs, bestStreak });
+      
       return { rounds, wins, currentStreak, bestStreak, bestSolveTimeMs };
     });
 
