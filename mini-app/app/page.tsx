@@ -181,106 +181,121 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex flex-col items-center justify-start p-4 pb-24 md:pb-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <Nav />
 
-      <main className="w-full max-w-md mt-6">
-        <DevControls />
-        {/* Mode Toggle */}
-        <div className="mt-3 grid grid-cols-2 gap-2" role="tablist" aria-label="Mode selector">
-          <button
-            role="tab"
-            aria-selected={mode === "daily"}
-            onClick={() => setMode("daily")}
-            className={`py-2 rounded-lg text-sm font-medium border ${
-              mode === "daily" ? "bg-[#0052FF] text-white border-[#0052FF]" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
-            }`}
-          >
-            Daily
-          </button>
-          <button
-            role="tab"
-            aria-selected={mode === "rounds"}
-            onClick={() => setMode("rounds")}
-            className={`py-2 rounded-lg text-sm font-medium border ${
-              mode === "rounds" ? "bg-[#0052FF] text-white border-[#0052FF]" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
-            }`}
-          >
-            Rounds
-          </button>
-        </div>
+      <div className="w-full max-w-6xl mx-auto mt-6 flex flex-col lg:flex-row gap-6">
+        {/* Left Sidebar - Stats */}
+        <aside className="lg:w-64 shrink-0 hidden lg:block">
+          <div className="sticky top-6">
+            <Stats />
+          </div>
+        </aside>
 
-        {/* Daily section (kept mounted) */}
-        <section aria-label="Daily Mode" hidden={mode !== "daily"}>
-          <PuzzleGrid
-            solutionIndex={solutionIndex}
-            dateKey={todayKey}
-            initialResult={initialResult}
-            onComplete={onComplete}
-          />
+        {/* Main Content */}
+        <main className="flex-1 max-w-md mx-auto w-full">
+          <DevControls />
+          {/* Mode Toggle */}
+          <div className="mt-3 grid grid-cols-2 gap-2" role="tablist" aria-label="Mode selector">
+            <button
+              role="tab"
+              aria-selected={mode === "daily"}
+              onClick={() => setMode("daily")}
+              className={`py-2 rounded-lg text-sm font-medium border mb-4 ${
+                mode === "daily" ? "bg-[#0052FF] text-white border-[#0052FF]" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+              }`}
+            >
+              Daily
+            </button>
+            <button
+              role="tab"
+              aria-selected={mode === "rounds"}
+              onClick={() => setMode("rounds")}
+              className={`py-2 rounded-lg text-sm font-medium border ${
+                mode === "rounds" ? "bg-[#0052FF] text-white border-[#0052FF]" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+              }`}
+            >
+              Rounds
+            </button>
+          </div>
 
-          {initialResult && (
-            <div className="mt-4 flex flex-col gap-3">
-              <div className="flex gap-2">
-                <button
-                  onClick={shareResult}
-                  aria-label="Share result"
-                  title="Share result"
-                  className="flex-1 py-2 rounded-lg text-sm font-medium focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
-                  style={{ backgroundColor: "#0052FF", color: "white" }}
-                >
-                  Share
-                </button>
-                <a
-                  href={`/api/og?date=${todayKey}&result=${
-                    initialResult.win ? "win" : "loss"
-                  }`}
-                  aria-label="Preview share image"
-                  title="Preview share image"
-                  className="flex-1 py-2 rounded-lg text-sm font-medium text-center border focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
-                  style={{ borderColor: "#e5e7eb" }}
-                >
-                  Preview
-                </a>
-                {initialResult.win && (
-                  <SubmitScore roundId={dailyRoundId} timeMs={initialResult.solveTimeMs} />
+          {/* Daily section (kept mounted) */}
+          <section aria-label="Daily Mode" hidden={mode !== "daily"}>
+            <PuzzleGrid
+              solutionIndex={solutionIndex}
+              dateKey={todayKey}
+              initialResult={initialResult}
+              onComplete={onComplete}
+            />
+
+            {initialResult ? (
+              <div className="mt-4 flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <button
+                    onClick={shareResult}
+                    aria-label="Share result"
+                    title="Share result"
+                    className="flex-1 py-2 rounded-lg text-sm font-medium focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
+                    style={{ backgroundColor: "#0052FF", color: "white" }}
+                  >
+                    Share
+                  </button>
+                  <a
+                    href={`/api/og?date=${todayKey}&result=${
+                      initialResult.win ? "win" : "loss"
+                    }`}
+                    aria-label="Preview share image"
+                    title="Preview share image"
+                    className="flex-1 py-2 rounded-lg text-sm font-medium text-center border focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 focus:outline-none"
+                    style={{ borderColor: "#e5e7eb" }}
+                  >
+                    Preview
+                  </a>
+                  {initialResult.win && (
+                    <SubmitScore roundId={dailyRoundId} timeMs={initialResult.solveTimeMs} />
+                  )}
+                </div>
+
+                <Countdown />
+                <GlobalBest roundId={dailyRoundId} />
+
+                {copied && (
+                  <div className="text-xs text-gray-500">Result copied to clipboard</div>
+                )}
+                {justShared && (
+                  <div className="text-xs text-gray-500">Opened share intent</div>
                 )}
               </div>
+            ) : (
+              <div className="mt-4">
+                <Countdown />
+                <GlobalBest roundId={dailyRoundId} />
+              </div>
+            )}
+          </section>
 
-              <Countdown />
-              <GlobalBest roundId={dailyRoundId} />
+          {/* Rounds section (kept mounted) */}
+          <section aria-label="Rounds Mode" hidden={mode !== "rounds"} className="mt-2">
+            <RoundMode />
+          </section>
 
-              {copied && (
-                <div className="text-xs text-gray-500">Result copied to clipboard</div>
-              )}
-              {justShared && (
-                <div className="text-xs text-gray-500">Opened share intent</div>
-              )}
-              <Stats />
-            </div>
-          )}
+          <footer className="mt-6 text-xs text-gray-500 text-center">
+            Built for Base Mini Apps • No wallets, no tokens
+          </footer>
+        </main>
 
-          {!initialResult && (
-            <div className="mt-4">
-              <Countdown />
-              <GlobalBest roundId={dailyRoundId} />
-              <Stats />
-            </div>
-          )}
-        </section>
-
-        {/* Rounds section (kept mounted) */}
-        <section aria-label="Rounds Mode" hidden={mode !== "rounds"} className="mt-2">
-          <RoundMode />
-        </section>
-
-        <footer className="mt-6 text-xs text-gray-500 text-center">
-          Built for Base Mini Apps • No wallets, no tokens
-        </footer>
-
-        {/* Local leaderboard is always visible */}
+        {/* Right Sidebar - Leaderboard */}
+        <aside className="lg:w-64 shrink-0 hidden lg:block">
+          <div className="sticky top-6">
+            <LocalStats />
+          </div>
+        </aside>
+      </div>
+      
+      {/* Mobile: Show LocalStats below main content */}
+      <div className="w-full lg:hidden mt-6 px-4">
         <LocalStats />
-      </main>
+      </div>
     </div>
   );
 }
