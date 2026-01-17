@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getOverrideDate, setOverrideDate } from "../lib/storage";
 
 export default function DevControls() {
-  const isDev = process.env.NODE_ENV !== "production";
+  const isDev = process.env.NODE_ENV !== "development";
   const [override, setOverride] = useState<string | null>(null);
 
   useEffect(() => {

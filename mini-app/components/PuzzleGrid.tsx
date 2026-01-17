@@ -37,28 +37,29 @@ export default function PuzzleGrid({
   const size = getGridSize();
   const total = size * size;
 
-  const [state, setState] = useState<PuzzleState>(
-    initialResult ? (initialResult.win ? "success" : "locked") : "idle"
-  );
-  const [choice, setChoice] = useState<number | null>(
-    initialResult?.choice ?? null
-  );
-
-  // Timer for solve time tracking
+  const [isMounted, setIsMounted] = useState(false);
+  const [state, setState] = useState<PuzzleState>('idle');
+  const [choice, setChoice] = useState<number | null>(null);
   const [startTs, setStartTs] = useState<number | null>(null);
 
-  // start timer when grid is shown and puzzle is not already completed
   useEffect(() => {
-    if (!initialResult) {
-      setStartTs(Date.now());
+    setIsMounted(true);
+    if (initialResult) {
+      setState(initialResult.win ? "success" : "locked");
+      setChoice(initialResult.choice ?? null);
     } else {
+      setStartTs(Date.now());
+    }
+  }, []);
+
+  // Handle initial result changes after mount
+  useEffect(() => {
+    if (isMounted && initialResult) {
+      setState(initialResult.win ? "success" : "locked");
+      setChoice(initialResult.choice ?? null);
       setStartTs(null);
     }
-  }, [initialResult]);
-
-  useEffect(() => {
-    if (initialResult) setChoice(initialResult.choice ?? null);
-  }, [initialResult]);
+  }, [initialResult, isMounted]);
 
   function tryVibrate() {
     try {
@@ -129,8 +130,8 @@ export default function PuzzleGrid({
               }
             }}
             className={cellClass(i)}
-            disabled={state === "locked" || state === "success" || choice !== null}
-            aria-disabled={state === "locked" || state === "success" || choice !== null ? "true" : "false"}
+            disabled={!isMounted || state === "locked" || state === "success" || choice !== null}
+            aria-disabled={!isMounted || state === "locked" || state === "success" || choice !== null ? "true" : "false"}
             aria-pressed={choice === i ? "true" : "false"}
           >
             {/* Keep cells minimal and rounded */}
